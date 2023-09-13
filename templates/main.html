@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <!-- Header -->
+    <div class="container"><h1>Home page</h1></div>
+
+
+    <div class="container">
+      <!-- Card to display current balance -->
+      <div class="card" style="width: 18rem;">
+        <div  class="card-body">
+            <h5 class="card-title">Current balance</h5>
+            {{ balance }}
+        </div>
+      <!-- Card to display current stock level -->
+      <div class="card" style="width: 18rem;">
+        <div  class="card-body">
+            <h5 class="card-title">Current stock level</h5>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Unit Price</th>
+              <th scope="col">Quantity</th>
+            </tr>
+          </thead>
+
+        {% for item in inventory %}
+          <tbody>
+            <tr>
+              <td>{{ item.product_name }}</td>
+              <td>{{ item.unit_price }}</td>
+              <td>{{ item.quantity }}</td>
+            </tr>
+          </tbody>
+        {% endfor %}
+        </table>
+        
+        </div>
+    </div>
+    
+{% endblock %}

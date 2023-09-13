@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  
+{% endfor %}
+    <!-- Header -->
+    <div class="container"><h1>Balance form</h1></div>
+    <!-- Purchase form -->
+</br>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      {{ form.operation.label (class="col-sm-2 col-form-label") }}
+      {{ form.operation(class="form-control-sm") }}
+    </br>
+      {{ form.amount.label(class="col-sm-2 col-form-label") }}
+      {{ form.amount(class="form-control-sm") }}
+    </br>
+      {{ form.submit(class="btn btn-primary mb-2") }}
+      </form>
+
+{% endblock %}
