@@ -1,12 +1,9 @@
 
 import os
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
+from database import db, Balance, Inventory, History
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_alembic import Alembic
-from flask_wtf import FlaskForm
-from wtforms import DecimalField, IntegerField, SelectField, StringField, SubmitField
-from wtforms.validators import InputRequired
+from form_class import InventoryForm, BalanceForm
 
 # Create an instance of a Flask object
 app = Flask(__name__)
@@ -23,50 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Create secret key for form creation
 app.config['SECRET_KEY'] = "temporary"
 
-# Create a form class for purchase operation
-class InventoryForm(FlaskForm):
-    product_name = StringField("Product name", validators=[InputRequired()])
-    price = DecimalField("Product price", validators=[InputRequired()])
-    quantity = IntegerField("Quantity", validators=[InputRequired()])
-    submit = SubmitField("Submit", validators=[InputRequired()])
-
-# Create a form class for balance operation
-class BalanceForm(FlaskForm):
-    operation = SelectField("Operation type", choices=[('Debit', '+'), ('Credit', '-')])
-    amount = IntegerField("Amount", validators=[InputRequired()])
-    submit = SubmitField("Submit", validators=[InputRequired()])
-
-# create an SQLAlchemy instance that interacts with the database and manage database operation
-db = SQLAlchemy(app)
-
-# Define database model
-class Balance(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-
-    def __repr__(self):
-        return '<Amount %r>' % self.amount
-
-class Inventory(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    product_name = db.Column(db.String(100), nullable=False, unique=True)
-    unit_price = db.Column(db.Float, nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return '<Product %r>' % self.product
-    
-
-class History(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
-    history = db.Column(db.String(250), nullable=False)
-    transaction_type = db.Column(db.String(100), nullable=False)
-
-    def __repr__(self):
-        return '<History %r>' % self.history
-
+db.init_app(app)
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -124,11 +78,6 @@ def purchase(Action):
 
         else:
             flash(f"Insufficient balance for purchase of {total_price}. Current balance: {current_balance} ")
-    
-        # Set value back to None
-        # form.product_name.data = ''
-        # form.price.data = ''
-        # form.quantity.data = ''
 
         return redirect(url_for('purchase', Action=Action))
   
@@ -176,12 +125,6 @@ def sale(Action):
         
         else:
             flash(f"Product {product_name} not in inventory.")
-        
-
-        # Set value back to None
-        form.product_name.data = ''
-        form.price.data = ''
-        form.quantity.data = ''
 
         return redirect(url_for('sale', Action=Action))
 
